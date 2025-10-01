@@ -2,6 +2,12 @@
 
 Ferramenta interativa para avaliação neuropsicológica de Paralisia Supranuclear Progressiva (PSP) baseada nos critérios MDS 2017.
 
+## 📚 Documentation
+
+- **[⚡ Quick Start Guide](QUICKSTART.md)** - Deploy in 3 steps (5 minutes)
+- **[🚀 Deployment Guide](DEPLOYMENT.md)** - Complete deployment options for all platforms
+- **[📖 This README]** - Overview and local development
+
 ## 🌐 Deploy Online
 
 Este projeto pode ser facilmente implantado em várias plataformas:
