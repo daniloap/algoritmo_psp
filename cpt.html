@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conner's CPT - Teste de Performance Contínua</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .instructions h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #test-area {
+            display: none;
+            min-height: 400px;
+        }
+
+        #letter-display {
+            font-size: 120px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 80px 0;
+            min-height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #progress-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        #progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        #trial-info {
+            color: #666;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        #results {
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .result-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .result-card .unit {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        #countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 40px 0;
+        }
+
+        .interpretation {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .interpretation h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="welcome-screen">
+            <h1>Teste de Performance Contínua</h1>
+            <h2 style="color: #666; margin-bottom: 30px;">Conner's CPT</h2>
+
+            <div class="instructions">
+                <h2>Instruções</h2>
+                <p><strong>Objetivo:</strong> Este teste avalia sua atenção sustentada e controle de impulsos.</p>
+                <ul>
+                    <li>Letras aparecerão na tela, uma de cada vez</li>
+                    <li><strong>Clique com o mouse ou pressione a BARRA DE ESPAÇO</strong> quando ver qualquer letra</li>
+                    <li><strong>EXCETO quando a letra for "X"</strong></li>
+                    <li>Quando aparecer a letra "X", NÃO clique e NÃO pressione nada</li>
+                    <li>Responda o mais rápido possível, mas com atenção</li>
+                    <li>O teste dura aproximadamente 5 minutos</li>
+                </ul>
+                <div class="warning">
+                    ⚠️ Importante: Mantenha o foco durante todo o teste. Tente não se distrair.
+                </div>
+            </div>
+
+            <button class="button" onclick="startTest()">Iniciar Teste</button>
+        </div>
+
+        <div id="countdown-screen" style="display: none;">
+            <h2>Prepare-se!</h2>
+            <div id="countdown">3</div>
+            <p>O teste começará em alguns segundos...</p>
+        </div>
+
+        <div id="test-area">
+            <div id="trial-info">Tentativa <span id="current-trial">0</span> de <span id="total-trials">0</span></div>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <div id="letter-display"></div>
+            <p style="color: #666;">Clique com o mouse ou pressione ESPAÇO para qualquer letra exceto "X"</p>
+        </div>
+
+        <div id="results">
+            <h1>Resultados do Teste</h1>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>Tentativas Totais</h3>
+                    <div class="value" id="total-trials-result">0</div>
+                </div>
+                <div class="result-card">
+                    <h3>Erros de Omissão</h3>
+                    <div class="value" id="omission-errors">0</div>
+                    <div class="unit">Não respondeu quando deveria</div>
+                </div>
+                <div class="result-card">
+                    <h3>Erros de Comissão</h3>
+                    <div class="value" id="commission-errors">0</div>
+                    <div class="unit">Respondeu ao "X"</div>
+                </div>
+                <div class="result-card">
+                    <h3>Tempo de Reação Médio</h3>
+                    <div class="value" id="avg-reaction-time">0</div>
+                    <div class="unit">milissegundos</div>
+                </div>
+                <div class="result-card">
+                    <h3>Acertos</h3>
+                    <div class="value" id="correct-responses">0</div>
+                </div>
+                <div class="result-card">
+                    <h3>Taxa de Acerto</h3>
+                    <div class="value" id="accuracy">0</div>
+                    <div class="unit">%</div>
+                </div>
+            </div>
+
+            <div class="interpretation">
+                <h3>Interpretação</h3>
+                <div id="interpretation-text"></div>
+            </div>
+
+            <button class="button" onclick="location.reload()">Fazer Novo Teste</button>
+            <button class="button" onclick="downloadResults()">Baixar Resultados</button>
+        </div>
+    </div>
+
+    <script>
+        // Test configuration
+        const CONFIG = {
+            totalTrials: 150,
+            stimulusDuration: 250, // ms
+            interStimulusInterval: 1500, // ms (1-4 seconds random)
+            targetProbability: 0.1, // 10% of trials will be "X"
+            letters: 'ABCDEFGHIJKLMNOPQRSTUVWYZ'.split('') // All letters except X
+        };
+
+        // Test state
+        let testState = {
+            currentTrial: 0,
+            responses: [],
+            startTime: null,
+            trialStartTime: null,
+            omissionErrors: 0,
+            commissionErrors: 0,
+            correctResponses: 0,
+            reactionTimes: [],
+            currentLetter: '',
+            responded: false
+        };
+
+        function startTest() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('countdown-screen').style.display = 'block';
+
+            let count = 3;
+            const countdownEl = document.getElementById('countdown');
+
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownEl.textContent = count;
+                } else {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown-screen').style.display = 'none';
+                    document.getElementById('test-area').style.display = 'block';
+                    initializeTest();
+                }
+            }, 1000);
+        }
+
+        function initializeTest() {
+            testState.startTime = Date.now();
+            document.getElementById('total-trials').textContent = CONFIG.totalTrials;
+
+            // Add event listeners
+            document.addEventListener('keydown', handleKeyPress);
+            document.getElementById('letter-display').addEventListener('click', handleClick);
+
+            runNextTrial();
+        }
+
+        function handleKeyPress(event) {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                registerResponse();
+            }
+        }
+
+        function handleClick() {
+            registerResponse();
+        }
+
+        function registerResponse() {
+            if (testState.responded || !testState.currentLetter) return;
+
+            testState.responded = true;
+            const reactionTime = Date.now() - testState.trialStartTime;
+
+            const response = {
+                trial: testState.currentTrial,
+                letter: testState.currentLetter,
+                responded: true,
+                reactionTime: reactionTime,
+                correct: testState.currentLetter !== 'X'
+            };
+
+            testState.responses.push(response);
+
+            if (testState.currentLetter === 'X') {
+                // Commission error (responded to X)
+                testState.commissionErrors++;
+            } else {
+                // Correct response
+                testState.correctResponses++;
+                testState.reactionTimes.push(reactionTime);
+            }
+        }
+
+        function runNextTrial() {
+            if (testState.currentTrial >= CONFIG.totalTrials) {
+                endTest();
+                return;
+            }
+
+            testState.currentTrial++;
+            testState.responded = false;
+
+            // Update progress
+            document.getElementById('current-trial').textContent = testState.currentTrial;
+            const progress = (testState.currentTrial / CONFIG.totalTrials) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            // Clear display
+            document.getElementById('letter-display').textContent = '';
+
+            // Random inter-stimulus interval (1-4 seconds)
+            const isi = 1000 + Math.random() * 3000;
+
+            setTimeout(() => {
+                showStimulus();
+            }, isi);
+        }
+
+        function showStimulus() {
+            // Determine if this trial should be X or another letter
+            const isTarget = Math.random() < CONFIG.targetProbability;
+            testState.currentLetter = isTarget ? 'X' : CONFIG.letters[Math.floor(Math.random() * CONFIG.letters.length)];
+
+            testState.trialStartTime = Date.now();
+
+            // Show letter
+            document.getElementById('letter-display').textContent = testState.currentLetter;
+
+            // Hide letter after stimulus duration
+            setTimeout(() => {
+                document.getElementById('letter-display').textContent = '';
+
+                // Check if user should have responded but didn't
+                if (!testState.responded && testState.currentLetter !== 'X') {
+                    // Omission error (didn't respond to non-X letter)
+                    testState.omissionErrors++;
+                    testState.responses.push({
+                        trial: testState.currentTrial,
+                        letter: testState.currentLetter,
+                        responded: false,
+                        correct: false
+                    });
+                } else if (!testState.responded && testState.currentLetter === 'X') {
+                    // Correct rejection (didn't respond to X)
+                    testState.correctResponses++;
+                    testState.responses.push({
+                        trial: testState.currentTrial,
+                        letter: testState.currentLetter,
+                        responded: false,
+                        correct: true
+                    });
+                }
+
+                // Move to next trial
+                runNextTrial();
+            }, CONFIG.stimulusDuration);
+        }
+
+        function endTest() {
+            document.getElementById('test-area').style.display = 'none';
+
+            // Remove event listeners
+            document.removeEventListener('keydown', handleKeyPress);
+
+            // Calculate results
+            const avgReactionTime = testState.reactionTimes.length > 0
+                ? Math.round(testState.reactionTimes.reduce((a, b) => a + b, 0) / testState.reactionTimes.length)
+                : 0;
+
+            const accuracy = Math.round((testState.correctResponses / CONFIG.totalTrials) * 100);
+
+            // Display results
+            document.getElementById('total-trials-result').textContent = CONFIG.totalTrials;
+            document.getElementById('omission-errors').textContent = testState.omissionErrors;
+            document.getElementById('commission-errors').textContent = testState.commissionErrors;
+            document.getElementById('avg-reaction-time').textContent = avgReactionTime;
+            document.getElementById('correct-responses').textContent = testState.correctResponses;
+            document.getElementById('accuracy').textContent = accuracy;
+
+            // Generate interpretation
+            generateInterpretation(accuracy, testState.omissionErrors, testState.commissionErrors, avgReactionTime);
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function generateInterpretation(accuracy, omissions, commissions, avgRT) {
+            let interpretation = '<p>';
+
+            if (accuracy >= 90) {
+                interpretation += '<strong style="color: #28a745;">Desempenho Excelente:</strong> Você demonstrou ótima atenção sustentada e controle de impulsos. ';
+            } else if (accuracy >= 75) {
+                interpretation += '<strong style="color: #17a2b8;">Desempenho Bom:</strong> Você demonstrou boa atenção sustentada com alguns lapsos ocasionais. ';
+            } else if (accuracy >= 60) {
+                interpretation += '<strong style="color: #ffc107;">Desempenho Moderado:</strong> Há sinais de dificuldades com atenção sustentada. ';
+            } else {
+                interpretation += '<strong style="color: #dc3545;">Desempenho Baixo:</strong> Foram observadas dificuldades significativas com atenção sustentada. ';
+            }
+
+            interpretation += '</p><ul>';
+
+            if (omissions > 15) {
+                interpretation += '<li><strong>Erros de Omissão Elevados:</strong> Pode indicar desatenção ou dificuldade em manter o foco. Este padrão é comum em transtornos de atenção.</li>';
+            } else if (omissions > 5) {
+                interpretation += '<li><strong>Erros de Omissão Moderados:</strong> Alguns lapsos de atenção foram observados durante o teste.</li>';
+            } else {
+                interpretation += '<li><strong>Poucos Erros de Omissão:</strong> Boa capacidade de manter a atenção durante o teste.</li>';
+            }
+
+            if (commissions > 10) {
+                interpretation += '<li><strong>Erros de Comissão Elevados:</strong> Pode indicar impulsividade ou dificuldade em inibir respostas. Este padrão pode estar associado a problemas de controle inibitório.</li>';
+            } else if (commissions > 5) {
+                interpretation += '<li><strong>Erros de Comissão Moderados:</strong> Alguma impulsividade foi observada.</li>';
+            } else {
+                interpretation += '<li><strong>Poucos Erros de Comissão:</strong> Bom controle de impulsos durante o teste.</li>';
+            }
+
+            if (avgRT < 300) {
+                interpretation += '<li><strong>Tempo de Reação Rápido:</strong> Respostas muito rápidas, mas pode estar associado a maior impulsividade.</li>';
+            } else if (avgRT < 500) {
+                interpretation += '<li><strong>Tempo de Reação Normal:</strong> Velocidade de processamento adequada.</li>';
+            } else {
+                interpretation += '<li><strong>Tempo de Reação Lento:</strong> Respostas mais lentas podem indicar processamento mais cauteloso ou dificuldades de processamento.</li>';
+            }
+
+            interpretation += '</ul>';
+            interpretation += '<p style="margin-top: 15px;"><em>Nota: Este teste é apenas uma ferramenta de triagem. Para avaliação diagnóstica completa, consulte um profissional especializado.</em></p>';
+
+            document.getElementById('interpretation-text').innerHTML = interpretation;
+        }
+
+        function downloadResults() {
+            const results = {
+                data: new Date().toISOString(),
+                totalTrials: CONFIG.totalTrials,
+                omissionErrors: testState.omissionErrors,
+                commissionErrors: testState.commissionErrors,
+                correctResponses: testState.correctResponses,
+                accuracy: Math.round((testState.correctResponses / CONFIG.totalTrials) * 100),
+                avgReactionTime: testState.reactionTimes.length > 0
+                    ? Math.round(testState.reactionTimes.reduce((a, b) => a + b, 0) / testState.reactionTimes.length)
+                    : 0,
+                allReactionTimes: testState.reactionTimes,
+                detailedResponses: testState.responses
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "cpt_results_" + Date.now() + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+    </script>
+</body>
+</html>
